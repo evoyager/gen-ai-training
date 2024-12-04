@@ -1,11 +1,15 @@
 package com.epam.training.gen.ai.service;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
+import com.azure.ai.openai.models.ChatCompletions;
 import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
+import com.epam.training.gen.ai.dto.ChatHistory;
+import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,24 +26,34 @@ public class ChatService {
 
     private final OpenAIAsyncClient aiAsyncClient;
     private final String deploymentOrModelName;
+    private final ChatHistory chatHistory;
 
     public ChatService(OpenAIAsyncClient aiAsyncClient,
                                @Value("${client-openai-deployment-name}") String deploymentOrModelName) {
+        this.chatHistory = new ChatHistory();
         this.aiAsyncClient = aiAsyncClient;
         this.deploymentOrModelName = deploymentOrModelName;
     }
 
-    public Object getChatCompletions(String prompt) {
-        var completions = aiAsyncClient
-                .getChatCompletions(
-                        deploymentOrModelName,
-                        new ChatCompletionsOptions(
-                                List.of(new ChatRequestUserMessage(prompt))))
-                .block();
-        var messages = completions.getChoices().stream()
-                .map(c -> c.getMessage().getContent())
-                .toList();
-        log.info(messages.toString());
-        return messages;
+    public Mono<String> getChatResponse(String input, PromptExecutionSettings settings) {
+        chatHistory.addMessage("User: " + input);
+        String context = chatHistory.getRecentHistory(50);
+
+        ChatRequestUserMessage userMessage = new ChatRequestUserMessage(context + "\nUser: " + input);
+        ChatCompletionsOptions options = new ChatCompletionsOptions(List.of(userMessage));
+        options.setTemperature(settings.getTemperature());
+
+        return aiAsyncClient
+                .getChatCompletions(deploymentOrModelName, options)
+                .map(ChatCompletions::getChoices)
+                .flatMap(choices -> {
+                    if (choices != null && !choices.isEmpty()) {
+                        String response = choices.get(0).getMessage().getContent();
+                        chatHistory.addMessage("System: " + response);
+                        return Mono.just(response);
+                    }
+                    return Mono.just("System: No response received");
+                });
     }
+
 }

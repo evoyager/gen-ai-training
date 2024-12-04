@@ -2,9 +2,13 @@ package com.epam.training.gen.ai.controller;
 
 import com.epam.training.gen.ai.dto.ChatRequest;
 import com.epam.training.gen.ai.service.ChatService;
+import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/chat")
@@ -14,10 +18,12 @@ public class ChatController {
     private ChatService chatService;
 
     @PostMapping
-    @ResponseBody
-    public ResponseEntity<Object> chatWithBot(@RequestBody ChatRequest chatRequest) {
-        String prompt = chatRequest.getInput();
-        Object response = chatService.getChatCompletions(prompt);
-        return ResponseEntity.ok(response);
+    public Mono<String> chatWithBot(@RequestBody ChatRequest request) {
+        String prompt = request.getInput();
+        PromptExecutionSettings settings = PromptExecutionSettings.builder()
+                .withTemperature(request.getTemperature())
+                .build();
+
+        return chatService.getChatResponse(prompt, settings);
     }
 }
