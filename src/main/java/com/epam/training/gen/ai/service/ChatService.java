@@ -1,17 +1,12 @@
 package com.epam.training.gen.ai.service;
 
-import com.azure.ai.openai.OpenAIAsyncClient;
-import com.azure.ai.openai.models.ChatCompletions;
-import com.azure.ai.openai.models.ChatCompletionsOptions;
-import com.azure.ai.openai.models.ChatRequestUserMessage;
+import com.microsoft.semantickernel.Kernel;
+import com.microsoft.semantickernel.implementation.CollectionUtil;
+import com.microsoft.semantickernel.orchestration.InvocationContext;
+import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
-import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 /**
  * Service class for generating chat completions using Azure OpenAI.
@@ -24,36 +19,29 @@ import java.util.List;
 @Service
 public class ChatService {
 
-    private final OpenAIAsyncClient aiAsyncClient;
-    private final String deploymentOrModelName;
-    private final ChatHistory chatHistory;
+    private final ChatCompletionService chat;
+    private final Kernel kernel;
+    private final ChatHistory history;
+    private final InvocationContext invocationContext;
 
-    public ChatService(OpenAIAsyncClient aiAsyncClient,
-                               @Value("${client-openai-deployment-name}") String deploymentOrModelName) {
-        this.chatHistory = new ChatHistory();
-        this.aiAsyncClient = aiAsyncClient;
-        this.deploymentOrModelName = deploymentOrModelName;
+    public ChatService(ChatCompletionService chat, Kernel kernel, InvocationContext invocationContext) {
+        this.chat = chat;
+        this.kernel = kernel;
+        this.history = new ChatHistory();
+        this.invocationContext = invocationContext;
     }
 
-    public Mono<String> getChatResponse(String input, PromptExecutionSettings settings) {
-        chatHistory.addUserMessage(input);
+    public String getChatResponse(String input) {
+        history.addUserMessage(input);
 
-        ChatRequestUserMessage userMessage = new ChatRequestUserMessage(input);
-        ChatCompletionsOptions options = new ChatCompletionsOptions(List.of(userMessage));
-        options.setTemperature(settings.getTemperature());
+        var result = chat.getChatMessageContentsAsync(history, kernel, invocationContext)
+                .block();
 
-        return aiAsyncClient
-                .getChatCompletions(deploymentOrModelName, options)
-                .map(ChatCompletions::getChoices)
-                .flatMap(choices -> {
-                    if (choices != null && !choices.isEmpty()) {
-                        String response = choices.get(0).getMessage().getContent();
-                        chatHistory.addSystemMessage(response);
-                        log.info("Chat history: {}", chatHistory.getMessages().toString());
-                        return Mono.just(response);
-                    }
-                    return Mono.just("No response received");
-                });
+        String response = CollectionUtil.getLastOrNull(result).getContent();
+        history.addAssistantMessage(response);
+        log.info("Response: {}", response);
+
+        return response;
     }
 
 }
