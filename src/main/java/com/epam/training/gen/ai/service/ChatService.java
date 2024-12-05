@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
  * <p>
  * This service interacts with the Azure OpenAI API to generate chat completions
  * based on input message. It retrieves responses from the AI model
- * and logs them.
+ * and logs them. Also, it initiates ChatHistory for storing all user and system messages to ChatHistory.
+ * It uses ChatHistory to provide context about previous messages for an AI model.
  */
 @Slf4j
 @Service
