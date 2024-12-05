@@ -50,6 +50,7 @@ public class ChatService {
                     if (choices != null && !choices.isEmpty()) {
                         String response = choices.get(0).getMessage().getContent();
                         chatHistory.addMessage("System: " + response);
+                        log.info("Chat history: {}", chatHistory.getMessages().toString());
                         return Mono.just(response);
                     }
                     return Mono.just("System: No response received");
