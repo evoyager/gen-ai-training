@@ -4,7 +4,7 @@ import com.azure.ai.openai.OpenAIAsyncClient;
 import com.azure.ai.openai.models.ChatCompletions;
 import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
-import com.epam.training.gen.ai.dto.ChatHistory;
+import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,10 +36,9 @@ public class ChatService {
     }
 
     public Mono<String> getChatResponse(String input, PromptExecutionSettings settings) {
-        chatHistory.addMessage("User: " + input);
-        String context = chatHistory.getRecentHistory(50);
+        chatHistory.addUserMessage(input);
 
-        ChatRequestUserMessage userMessage = new ChatRequestUserMessage(context + "\nUser: " + input);
+        ChatRequestUserMessage userMessage = new ChatRequestUserMessage(input);
         ChatCompletionsOptions options = new ChatCompletionsOptions(List.of(userMessage));
         options.setTemperature(settings.getTemperature());
 
@@ -49,11 +48,11 @@ public class ChatService {
                 .flatMap(choices -> {
                     if (choices != null && !choices.isEmpty()) {
                         String response = choices.get(0).getMessage().getContent();
-                        chatHistory.addMessage("System: " + response);
+                        chatHistory.addSystemMessage(response);
                         log.info("Chat history: {}", chatHistory.getMessages().toString());
                         return Mono.just(response);
                     }
-                    return Mono.just("System: No response received");
+                    return Mono.just("No response received");
                 });
     }
 
