@@ -6,5 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChatRequest {
+    private double temperature;
+    private String model;
     private String input;
 }
