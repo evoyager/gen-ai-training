@@ -1,0 +1,76 @@
+### Module 3. Work with Different Models
+
+### Request 3.1 gpt-4 deployment name with 0.1 temperature
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "temperature": 0.1,
+  "model": "gpt-4",
+  "input": "Explain why man needs woman? Answer with humor"
+}
+
+### Response 3.1
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+A man needs a woman because life is like a sock drawer – without her, it's just a bunch of unmatched socks!
+Plus, who else is going to remind him that the milk he's about to drink expired a week ago? And let's be honest,
+a woman brings balance to his life, like a good Wi-Fi signal in a dead zone – suddenly, everything just works better!
+
+### Request 3.2 gpt-4o-2024-05-13 deployment name with 1.0 temperature
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "temperature": 1.0,
+  "model": "gpt-4o-2024-05-13",
+  "input": "What pros and cons of microservice architecture?"
+}
+
+### Response 3.2
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+Sure! Here are some pros and cons of microservice architecture, with a touch of humor:
+
+### Pros:
+
+1. **Scalability**:
+    - You can scale up individual microservices independently, kind of like upgrading your coffee machine without redesigning the whole kitchen.
+
+2. **Flexibility**:
+   - Different teams can use different tech stacks, which means you can have a "Java island" and a "Node.js beachfront" at the same time.
+
+3. **Resilience**:
+   - One microservice crashing doesn’t bring down the whole system, similar to how one bad joke in a stand-up routine doesn’t necessarily ruin the entire show.
+
+4. **Faster Deployment**:
+   - Smaller codebases mean quicker iterations and faster deployments. It's like cooking mini-pizzas instead of full-sized ones – they get ready faster!
+
+5. **Focused Teams**:
+   - Each team can focus on a specific service, meaning they can become experts in their little domain. It’s like having a master chef for each course in a meal.
+
+### Cons:
+
+1. **Complexity**:
+    - Managing a bunch of microservices can get as complicated as trying to keep track of all the characters.
+
+### Request 3.3 wrong gpt-44 deployment name
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "temperature": 0.1,
+  "model": "gpt-44",
+  "input": "Explain why man needs woman? Answer with humor"
+}
+
+### Response 3.3
+HTTP/1.1 500
+Content-Type: text/plain;charset=UTF-8
+
+{
+    "timestamp": "2024-12-09T17:15:17.443+00:00",
+    "status": 500,
+    "error": "Internal Server Error",
+    "path": "/api/v3/chat"
+}
