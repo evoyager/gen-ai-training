@@ -13,8 +13,9 @@ public class PluginController {
 
     private PluginService pluginService;
 
-    @GetMapping("/chat")
-    public String chatWithBot() {
-        return pluginService.getChatResponse();
+    @GetMapping("/date-in-french")
+    public String dateInFrench() {
+        return pluginService.getCurrentDateInFrench();
     }
+
 }

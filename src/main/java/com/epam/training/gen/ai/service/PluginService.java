@@ -34,7 +34,7 @@ public class PluginService {
         this.openAIAsyncClient = openAIAsyncClient;
     }
 
-    public String getChatResponse() {
+    public String getCurrentDateInFrench() {
         Kernel kernel = getKernel();
 
         KernelFunction<String> prompt = KernelFunctionFromPrompt
