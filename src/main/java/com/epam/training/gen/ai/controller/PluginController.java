@@ -1,10 +1,9 @@
 package com.epam.training.gen.ai.controller;
 
+import com.epam.training.gen.ai.dto.AgeCalculatorRequest;
 import com.epam.training.gen.ai.service.PluginService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v4")
@@ -16,6 +15,12 @@ public class PluginController {
     @GetMapping("/date-in-french")
     public String dateInFrench() {
         return pluginService.getCurrentDateInFrench();
+    }
+
+    @PostMapping("/age-calculator")
+    public String calculator(@RequestBody AgeCalculatorRequest request) {
+        String birthDay = request.getBirthDay();
+        return pluginService.calculateAge(birthDay);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.epam.training.gen.ai.service;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
+import com.epam.training.gen.ai.plugin.AgeCalculatorPlugin;
 import com.epam.training.gen.ai.plugin.TimePlugin;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
@@ -51,13 +52,33 @@ public class PluginService {
         return response;
     }
 
+    public String calculateAge(String birthDay) {
+        Kernel kernel = getKernel();
+
+        KernelFunction<String> prompt = KernelFunctionFromPrompt
+                .<String>createFromPrompt(String.format("""
+        Convert the age in days {{AgeCalculatorPlugin.ageInDays birthDay="%s"}} to minutes.
+    """, birthDay))
+                .build();
+
+        FunctionResult<String> ageInDays = prompt.invokeAsync(kernel)
+                .block();
+        String response = ageInDays.getResult();
+        log.info("Response: {}", response);
+
+        return response;
+
+    }
+
     private Kernel getKernel() {
         ChatCompletionService chat = getChatCompletionService(model);
         KernelPlugin timePlugin = KernelPluginFactory.createFromObject(new TimePlugin(),"TimePlugin");
+        KernelPlugin ageCalculatorPlugin = KernelPluginFactory.createFromObject(new AgeCalculatorPlugin(),"AgeCalculatorPlugin");
 
         return Kernel.builder()
                 .withAIService(ChatCompletionService.class, chat)
                 .withPlugin(timePlugin)
+                .withPlugin(ageCalculatorPlugin)
                 .build();
     }
 

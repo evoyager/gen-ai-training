@@ -74,3 +74,24 @@ Content-Type: text/plain;charset=UTF-8
     "error": "Internal Server Error",
     "path": "/api/v3/chat"
 }
+
+### Module 4. Semantic Kernel Plugins
+
+### Request 4.1 calculate age in minutes from birthday
+POST localhost:8080/api/v4/age-calculator
+Content-Type: application/json
+
+{
+  "birthDay": "Sunday, January 12, 2001"
+}
+
+### Response 4.1
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+To convert 8395 days into minutes, we need to know that there are 24 hours in a day and 60 minutes in an hour.
+
+First, let's find the number of hours in 8395 days: 8395 days * 24 hours/day = 201,480 hours.
+
+Now, to find the number of minutes, we multiply the number of hours by 60: 201,480 hours * 60 minutes/hour = 12,088,800 minutes.
+
+Therefore, 8395 days is equal to 12,088,800 minutes.
