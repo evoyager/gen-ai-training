@@ -4,9 +4,13 @@ import com.microsoft.semantickernel.semanticfunctions.annotations.DefineKernelFu
 import com.microsoft.semantickernel.semanticfunctions.annotations.KernelFunctionParameter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+
 @Slf4j
 public class AgeCalculatorPlugin {
-    public static final String DAY_MONTH_DAY_YEAR = "EEEE, MMMM d, yyyy";
+    public static final DateTimeFormatter DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     /**
      * Get the age in days.
@@ -16,17 +20,19 @@ public class AgeCalculatorPlugin {
      * @return The age in days.
      */
     @DefineKernelFunction(
-            name = "ageInDays",
-            description = "Calculate expression")
-    public Long ageInDays(
+            name = "ageInYears",
+            description = "Calculate age in years")
+    public String ageInYears(
             @KernelFunctionParameter(
                     name = "birthDay",
-                    description = "Birthday to calculate age in days"
+                    description = "Birthday to calculate age in years"
             )
             String birthDay) {
-        // Example: Sunday, January 12, 2001
+        // Example: 12-01-2001
+        LocalDate birthDate = LocalDate.parse(birthDay, DAY_MONTH_YEAR);
+        LocalDate currentDate = LocalDate.now();
 
         log.info("Simple plugin was called with birthday: [{}]", birthDay);
-        return (long) (23 * 365);
+        return String.valueOf(Period.between(birthDate, currentDate).getYears());
     }
 }

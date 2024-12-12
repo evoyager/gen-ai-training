@@ -57,7 +57,7 @@ public class PluginService {
 
         KernelFunction<String> prompt = KernelFunctionFromPrompt
                 .<String>createFromPrompt(String.format("""
-        Convert the age in days {{AgeCalculatorPlugin.ageInDays birthDay="%s"}} to minutes.
+        Convert the age in years {{AgeCalculatorPlugin.ageInYears birthDay="%s"}} to minutes.
     """, birthDay))
                 .build();
 
