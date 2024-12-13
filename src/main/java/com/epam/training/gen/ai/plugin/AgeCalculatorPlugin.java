@@ -15,7 +15,7 @@ public class AgeCalculatorPlugin {
     /**
      * Get the age in days.
      *
-     * <p>Example: {{age.ageInDays}} => 8395
+     * <p>Example: {{age.ageInYears}} => 8395
      *
      * @return The age in days.
      */

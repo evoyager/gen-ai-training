@@ -3,6 +3,7 @@ package com.epam.training.gen.ai.service;
 import com.azure.ai.openai.OpenAIAsyncClient;
 import com.epam.training.gen.ai.plugin.AgeCalculatorPlugin;
 import com.epam.training.gen.ai.plugin.TimePlugin;
+import com.epam.training.gen.ai.plugin.WeatherForecastPlugin;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
 import com.microsoft.semantickernel.orchestration.FunctionResult;
@@ -70,15 +71,36 @@ public class PluginService {
 
     }
 
+    public String forecastWeather(String city) {
+        Kernel kernel = getKernel();
+
+        KernelFunction<String> prompt = KernelFunctionFromPrompt
+                .<String>createFromPrompt(String.format("""
+        Suggest clothes to wear if weather forecast is: {{WeatherForecastPlugin.forecast city="%s"}}.
+    """, city))
+                .build();
+
+        FunctionResult<String> ageInDays = prompt.invokeAsync(kernel)
+                .block();
+        String response = ageInDays.getResult();
+        log.info("Response: {}", response);
+
+        return response;
+
+    }
+
     private Kernel getKernel() {
         ChatCompletionService chat = getChatCompletionService(model);
         KernelPlugin timePlugin = KernelPluginFactory.createFromObject(new TimePlugin(),"TimePlugin");
         KernelPlugin ageCalculatorPlugin = KernelPluginFactory.createFromObject(new AgeCalculatorPlugin(),"AgeCalculatorPlugin");
+        KernelPlugin weatherForecastPlugin = KernelPluginFactory.createFromObject(new WeatherForecastPlugin(),"WeatherForecastPlugin");
+
 
         return Kernel.builder()
                 .withAIService(ChatCompletionService.class, chat)
                 .withPlugin(timePlugin)
                 .withPlugin(ageCalculatorPlugin)
+                .withPlugin(weatherForecastPlugin)
                 .build();
     }
 
