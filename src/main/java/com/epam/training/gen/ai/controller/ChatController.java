@@ -2,22 +2,20 @@ package com.epam.training.gen.ai.controller;
 
 import com.epam.training.gen.ai.dto.ChatRequest;
 import com.epam.training.gen.ai.service.ChatService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/chat")
+@AllArgsConstructor
 public class ChatController {
 
-    @Autowired
     private ChatService chatService;
 
     @PostMapping
-    @ResponseBody
-    public ResponseEntity<Object> chatWithBot(@RequestBody ChatRequest chatRequest) {
-        String prompt = chatRequest.getInput();
-        Object response = chatService.getChatCompletions(prompt);
-        return ResponseEntity.ok(response);
+    public String chatWithBot(@RequestBody ChatRequest request) {
+        String prompt = request.getInput();
+
+        return chatService.getChatResponse(prompt);
     }
 }
