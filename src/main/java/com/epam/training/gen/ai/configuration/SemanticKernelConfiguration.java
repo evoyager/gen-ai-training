@@ -6,7 +6,9 @@ import com.azure.core.credential.AzureKeyCredential;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
 import com.microsoft.semantickernel.orchestration.InvocationContext;
+import com.microsoft.semantickernel.orchestration.InvocationReturnMode;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
+import com.microsoft.semantickernel.orchestration.ToolCallBehavior;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -60,9 +62,8 @@ public class SemanticKernelConfiguration {
     @Bean
     public InvocationContext invocationContext() {
         return InvocationContext.builder()
-                .withPromptExecutionSettings(PromptExecutionSettings.builder()
-                        .withTemperature(0.5)
-                        .build())
+                .withReturnMode(InvocationReturnMode.LAST_MESSAGE_ONLY)
+                .withToolCallBehavior(ToolCallBehavior.allowAllKernelFunctions(true))
                 .build();
     }
 
@@ -78,6 +79,21 @@ public class SemanticKernelConfiguration {
                 .credential(new AzureKeyCredential(apiKey))
                 .endpoint(apiEndpoint)
                 .buildAsyncClient();
+    }
+
+    /**
+     * Configures and provides a {@link PromptExecutionSettings} bean.
+     *
+     * <p>This method creates an instance of {@link PromptExecutionSettings} using a builder pattern.
+     * The resulting {@link PromptExecutionSettings} instance is then exposed as a Spring Bean, allowing it to be
+     * autowired into other components within the Spring application context.</p>
+     *
+     * @return a configured {@link PromptExecutionSettings} instance
+     */
+    @Bean
+    public PromptExecutionSettings promptExecutionSettings(@Value("${temperature}") double temperature) {
+        return PromptExecutionSettings.builder()
+                .withTemperature(temperature).build();
     }
 
 }
