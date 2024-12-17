@@ -1,4 +1,4 @@
-package com.epam.training.gen.ai.service;
+package com.epam.training.gen.ai.vector;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
 import com.azure.ai.openai.models.EmbeddingItem;
@@ -25,7 +25,7 @@ import static io.qdrant.client.WithPayloadSelectorFactory.enable;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class EmbeddingsService {
+public class SimpleVectorActions {
     private static final String COLLECTION_NAME = "demo_collection";
     private final OpenAIAsyncClient openAIAsyncClient;
     private final QdrantClient qdrantClient;
