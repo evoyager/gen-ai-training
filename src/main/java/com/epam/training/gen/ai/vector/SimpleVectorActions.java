@@ -5,7 +5,6 @@ import com.azure.ai.openai.models.EmbeddingItem;
 import com.azure.ai.openai.models.Embeddings;
 import com.azure.ai.openai.models.EmbeddingsOptions;
 import io.qdrant.client.QdrantClient;
-import io.qdrant.client.grpc.Collections;
 import io.qdrant.client.grpc.Points;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,7 @@ import static io.qdrant.client.WithPayloadSelectorFactory.enable;
 @Service
 @AllArgsConstructor
 public class SimpleVectorActions {
-    private static final String COLLECTION_NAME = "demo_collection";
+    private static final String COLLECTION_NAME = "test_collection";
     private final OpenAIAsyncClient openAIAsyncClient;
     private final QdrantClient qdrantClient;
 
@@ -102,12 +101,12 @@ public class SimpleVectorActions {
      * @throws ExecutionException if the saving operation fails
      */
     private void saveVector(ArrayList<Points.PointStruct> pointStructs) throws InterruptedException, ExecutionException {
-        qdrantClient.createCollectionAsync(COLLECTION_NAME,
-                        Collections.VectorParams.newBuilder()
-                                .setDistance(Collections.Distance.Cosine)
-                                .setSize(1536)
-                                .build())
-                .get();
+//        qdrantClient.createCollectionAsync(COLLECTION_NAME,
+//                        Collections.VectorParams.newBuilder()
+//                                .setDistance(Collections.Distance.Cosine)
+//                                .setSize(1536)
+//                                .build())
+//                .get();
         var updateResult = qdrantClient.upsertAsync(COLLECTION_NAME, pointStructs).get();
         log.info(updateResult.getStatus().name());
     }

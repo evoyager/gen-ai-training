@@ -20,4 +20,8 @@ public class VectorService {
     public Collections.CollectionOperationResponse createCollection(String collectionName, AddCollectionRequest request) throws ExecutionException, InterruptedException {
         return qdrantClient.createCollectionAsync(collectionName, VectorParams.newBuilder().setDistance(Distance.Cosine).setSize(request.getSize()).build()).get();
     }
+
+    public Collections.CollectionOperationResponse deleteCollection(String collectionName) throws ExecutionException, InterruptedException {
+        return qdrantClient.deleteCollectionAsync(collectionName).get();
+    }
 }

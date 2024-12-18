@@ -35,6 +35,17 @@ public class VectorController {
         return ResponseEntity.ok(String.format("Collection created with response: {%s}", response));
     }
 
+    @DeleteMapping("/vector/collections/{collection_name}")
+    public ResponseEntity<String> deleteCollection(@PathVariable String collection_name) {
+        Collections.CollectionOperationResponse response;
+        try {
+            response = vectorService.deleteCollection(collection_name);
+        } catch (ExecutionException | InterruptedException e) {
+            return new ResponseEntity<>(String.format("Failed to delete collection. Reason: %s", e.getCause()), HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(String.format("Collection deleted with response: {%s}", response));
+    }
+
 
     @PostMapping("/embeddings")
     public List<EmbeddingItem> getEmbeddings(@RequestBody EmbeddingsRequest request) {
