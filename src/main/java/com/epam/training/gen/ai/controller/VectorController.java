@@ -4,7 +4,6 @@ import com.azure.ai.openai.models.EmbeddingItem;
 import com.epam.training.gen.ai.dto.AddCollectionRequest;
 import com.epam.training.gen.ai.dto.EmbeddingsRequest;
 import com.epam.training.gen.ai.service.VectorService;
-import com.epam.training.gen.ai.vector.SimpleVectorActions;
 import io.qdrant.client.grpc.Collections;
 import io.qdrant.client.grpc.Points;
 import lombok.AllArgsConstructor;
@@ -20,10 +19,9 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class VectorController {
 
-    private SimpleVectorActions simpleVectorActions;
     private VectorService vectorService;
 
-    @PutMapping("/vector/collections/{collection_name}")
+    @PutMapping("/collections/{collection_name}")
     public ResponseEntity<String> createCollection(@PathVariable String collection_name,
                                                    @RequestBody AddCollectionRequest request) {
         Collections.CollectionOperationResponse response;
@@ -35,7 +33,7 @@ public class VectorController {
         return ResponseEntity.ok(String.format("Collection created with response: {%s}", response));
     }
 
-    @DeleteMapping("/vector/collections/{collection_name}")
+    @DeleteMapping("/collections/{collection_name}")
     public ResponseEntity<String> deleteCollection(@PathVariable String collection_name) {
         Collections.CollectionOperationResponse response;
         try {
@@ -50,24 +48,24 @@ public class VectorController {
     @PostMapping("/embeddings")
     public List<EmbeddingItem> getEmbeddings(@RequestBody EmbeddingsRequest request) {
         String prompt = request.getInput();
-        return simpleVectorActions.getEmbeddings(prompt);
+        return vectorService.getEmbeddings(prompt);
     }
 
-    @PostMapping("/save-embeddings")
-    public void processEmbeddingsAndSave(@RequestBody EmbeddingsRequest request) {
+    @PostMapping("/collections/{collection_name}/points")
+    public void processEmbeddingsAndSave(@PathVariable String collectionName, @RequestBody EmbeddingsRequest request) {
         String prompt = request.getInput();
         try {
-            simpleVectorActions.processAndSaveText(prompt);
+            vectorService.processAndSaveText(collectionName, prompt);
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @PostMapping("/search-embeddings")
-    public List<Points.ScoredPoint> searchEmbeddings(@RequestBody EmbeddingsRequest request) {
+    @PostMapping("/collections/{collection_name}/points/query")
+    public List<Points.ScoredPoint> searchEmbeddings(@PathVariable String collectionName, @RequestBody EmbeddingsRequest request) {
         String prompt = request.getInput();
         try {
-            return simpleVectorActions.search(prompt);
+            return vectorService.search(collectionName, prompt);
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
