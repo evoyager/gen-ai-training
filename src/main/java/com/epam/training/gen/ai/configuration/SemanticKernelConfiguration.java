@@ -10,6 +10,8 @@ import com.microsoft.semantickernel.orchestration.InvocationReturnMode;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import com.microsoft.semantickernel.orchestration.ToolCallBehavior;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
+import io.qdrant.client.QdrantClient;
+import io.qdrant.client.QdrantGrpcClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -94,6 +96,16 @@ public class SemanticKernelConfiguration {
     public PromptExecutionSettings promptExecutionSettings(@Value("${temperature}") double temperature) {
         return PromptExecutionSettings.builder()
                 .withTemperature(temperature).build();
+    }
+
+    /**
+     * Creates a {@link QdrantClient} bean for interacting with the Qdrant service.
+     *
+     * @return an instance of {@link QdrantClient}
+     */
+    @Bean
+    public QdrantClient qdrantClient() {
+        return new QdrantClient(QdrantGrpcClient.newBuilder("localhost", 6334, false).build());
     }
 
 }
