@@ -128,7 +128,7 @@ POST localhost:8080/api/v5/vector/collections/test_collection
 Content-Type: application/json
 
 {
-  "size": 8
+  "size": 1536
 }
 
 ### Response 5.1
