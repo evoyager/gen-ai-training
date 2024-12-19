@@ -197,7 +197,10 @@ Content-Type: application/json
 HTTP/1.1 200
 Content-Type: text/plain;charset=UTF-8
 
-//TODO: Replace mocked up response with actual
+# TODO: Replace mocked up response with actual
+# Now I catched exception: com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Direct self-reference leading
+# to cycle (through reference chain: java.util.Collections$UnmodifiableRandomAccessList[0]->io.qdrant.client.grpc.Points$ScoredPoint["unknownFields"]->com.google.protobuf.UnknownFieldSet["defaultInstanceForType"])
+
 {
   "result": [
     { "id": 10, "score": 0.81 },
