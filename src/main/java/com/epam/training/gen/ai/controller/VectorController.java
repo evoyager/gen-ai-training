@@ -21,23 +21,23 @@ public class VectorController {
 
     private VectorService vectorService;
 
-    @PutMapping("/collections/{collection_name}")
-    public ResponseEntity<String> createCollection(@PathVariable String collection_name,
+    @PutMapping("/collections/{collectionName}")
+    public ResponseEntity<String> createCollection(@PathVariable String collectionName,
                                                    @RequestBody AddCollectionRequest request) {
         Collections.CollectionOperationResponse response;
         try {
-            response = vectorService.createCollection(collection_name, request);
+            response = vectorService.createCollection(collectionName, request);
         } catch (ExecutionException | InterruptedException e) {
             return new ResponseEntity<>(String.format("Failed to create collection. Reason: %s", e.getCause()), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(String.format("Collection created with response: {%s}", response));
     }
 
-    @DeleteMapping("/collections/{collection_name}")
-    public ResponseEntity<String> deleteCollection(@PathVariable String collection_name) {
+    @DeleteMapping("/collections/{collectionName}")
+    public ResponseEntity<String> deleteCollection(@PathVariable String collectionName) {
         Collections.CollectionOperationResponse response;
         try {
-            response = vectorService.deleteCollection(collection_name);
+            response = vectorService.deleteCollection(collectionName);
         } catch (ExecutionException | InterruptedException e) {
             return new ResponseEntity<>(String.format("Failed to delete collection. Reason: %s", e.getCause()), HttpStatus.BAD_REQUEST);
         }
@@ -51,7 +51,7 @@ public class VectorController {
         return vectorService.getEmbeddings(prompt);
     }
 
-    @PostMapping("/collections/{collection_name}/points")
+    @PostMapping("/collections/{collectionName}/points")
     public void processEmbeddingsAndSave(@PathVariable String collectionName, @RequestBody EmbeddingsRequest request) {
         String prompt = request.getInput();
         try {
@@ -61,7 +61,7 @@ public class VectorController {
         }
     }
 
-    @PostMapping("/collections/{collection_name}/points/query")
+    @PostMapping("/collections/{collectionName}/points/query")
     public List<Points.ScoredPoint> searchEmbeddings(@PathVariable String collectionName, @RequestBody EmbeddingsRequest request) {
         String prompt = request.getInput();
         try {

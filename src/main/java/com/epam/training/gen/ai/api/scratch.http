@@ -119,3 +119,91 @@ For the weather forecast in Miami, Florida on December 14, 2024, with temperatur
 7. Light accessories: Accessorize with lightweight scarves or jewelry to enhance your outfit without feeling weighed down.
 
 Remember to follow the forecast updates as the weather conditions may change closer to the date.
+
+
+### Module 5. Embeddings
+
+### Request 5.1. Create Qdrant collection
+POST localhost:8080/api/v5/vector/collections/test_collection
+Content-Type: application/json
+
+{
+  "size": 8
+}
+
+### Response 5.1
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+
+Collection created with response: {result: true
+time: 0.21375812
+}
+
+### Request 5.2. Delete Qdrant collection
+DELETE localhost:8080/api/v5/vector/collections/test_collection
+
+### Response 5.2
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+
+Collection deleted with response: {result: true
+time: 0.033812463
+}
+
+### Request 5.3. Get embeddings
+POST localhost:8080/api/v5/embeddings
+Content-Type: application/json
+
+{
+  "input": "What is the sense of life?"
+}
+
+### Response 5.3
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+
+[
+    {
+        "promptIndex": 0,
+        "embedding": [
+            0.008420758,
+...
+        ],
+        "embeddingAsString": "..."
+    }
+]
+
+### Request 5.4. Save embeddings
+POST localhost:8080/api/v5/collections/test_collection/points
+Content-Type: application/json
+
+{
+  "input": "What is the sense of life?"
+}
+
+### Response 5.4
+HTTP/1.1 200
+
+
+### Request 5.5. Search embeddings
+POST localhost:8080/api/v5/collections/test_collection/points/query
+Content-Type: application/json
+
+{
+  "input": "life"
+}
+
+### Response 5.5
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+
+//TODO: Replace mocked up response with actual
+{
+  "result": [
+    { "id": 10, "score": 0.81 },
+    { "id": 14, "score": 0.75 },
+    { "id": 11, "score": 0.73 }
+  ],
+  "status": "ok",
+  "time": 0.001
+}
