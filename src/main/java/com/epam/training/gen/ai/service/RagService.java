@@ -10,6 +10,7 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import dev.langchain4j.store.embedding.IngestionResult;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,14 +32,20 @@ public class RagService {
 
     @Value("${client-openai-endpoint}") String endpoint;
 
-    public String chatViaRag(String prompt) {
-        List<Document> documents = FileSystemDocumentLoader.loadDocuments(
-                "./src/main/resources/documents"
-        );
-        //TODO: use real embedding store like Qdrant instead of in-memory
-        InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
-        EmbeddingStoreIngestor.ingest(documents, embeddingStore);
+    InMemoryEmbeddingStore<TextSegment> embeddingStore;
 
+    public RagService() {
+        this.embeddingStore = new InMemoryEmbeddingStore<>();
+    }
+
+    public IngestionResult loadDocuments(String path) {
+        List<Document> documents = FileSystemDocumentLoader.loadDocuments(path);
+        //TODO: use real embedding store like Qdrant instead of in-memory
+//        InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+        return EmbeddingStoreIngestor.ingest(documents, embeddingStore);
+    }
+
+    public String chatViaRag(String prompt) {
         ChatLanguageModel chatModel = OpenAiChatModel.builder()
                 .apiKey(apiKey)
                 .modelName(GPT_4_O_MINI)
