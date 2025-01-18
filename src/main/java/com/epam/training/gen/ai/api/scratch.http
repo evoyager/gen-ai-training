@@ -210,3 +210,77 @@ Content-Type: text/plain;charset=UTF-8
   "status": "ok",
   "time": 0.001
 }
+
+### Module 6. Retrieval-Augmented Generation
+
+### Request 6.1. Load documents to RAG
+POST localhost:8080/api/v6/rag/documents
+Content-Type: application/json
+
+{
+  "path": "./src/main/resources/documents"
+}
+
+### Response 6.1
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+
+Documents successfully loaded to RAG from path: ["./src/main/resources/documents"].
+TokenUsage { inputTokenCount = 9907, outputTokenCount = null, totalTokenCount = 9907 }
+
+### Request 6.2. Get response from AI based on the knowledge sources.
+POST localhost:8080/api/v6/rag/chat
+Content-Type: application/json
+
+{
+  "input": "How to do Easy RAG with LangChain4j?"
+}
+
+### Response 6.2
+HTTP/1.1 200
+Content-Type: text/plain;charset=UTF-8
+
+Response from RAG: {To implement Easy RAG (Retrieval-Augmented Generation) with LangChain4j, you can follow these steps. This approach is particularly straightforward and is ideal for those looking to learn about RAG or create a proof of concept. Here’s how to get started:
+
+### 1. Add Dependency
+First, you need to import the `langchain4j-easy-rag` dependency into your project. If you are using Maven, add the following to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-easy-rag</artifactId>
+    <version>0.36.2</version>
+</dependency>
+```
+
+### 2. Load Your Documents
+Next, you will load the documents you want to use for your RAG setup. You can do this by utilizing the `FileSystemDocumentLoader` to load all files from a specified directory:
+
+```java
+List<Document> documents = FileSystemDocumentLoader.loadDocuments("/home/langchain4j/documentation");
+```
+
+This line of code will load all the files from the specified directory using the Apache Tika library, which automatically detects and parses various document types.
+
+### 3. Understand the Process
+When you load your documents, the `FileSystemDocumentLoader` uses the `ApacheTikaDocumentParser` by default, thanks to the service provider interface (SPI) provided by the `langchain4j-easy-rag` dependency. This means you don’t need to worry about the details of document parsing.
+
+### 4. Retrieval Process
+Under the hood, the retrieval process typically involves:
+- Embedding the user's query.
+- Performing a similarity search in the embedding store.
+- Injecting relevant segments of the documents into the prompt sent to the LLM (Large Language Model).
+
+### 5. Exploring RAG Flavors
+LangChain4j offers different flavors of RAG:
+- **Easy RAG**: Simplest way to get started with RAG.
+- **Naive RAG**: Basic implementation using vector search.
+- **Advanced RAG**: A modular framework allowing for advanced operations like query transformation and re-ranking.
+
+### 6. Using Quarkus
+If you are using Quarkus, there is an even easier way to implement Easy RAG. For specific instructions and features available in Quarkus, refer to the [Quarkus documentation](https://quarkus.io/guides/).
+
+### Conclusion
+While the quality of Easy RAG will be lower than a tailored RAG setup, it provides a great starting point for learning and prototyping. As you become more familiar with RAG concepts, you can transition to more advanced setups, allowing for greater customization and efficiency in your applications.
+
+This approach allows you to leverage LangChain4j for RAG in a straightforward manner, making it accessible for developers at any level.}
